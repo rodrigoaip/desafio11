@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Image } from 'react-native';
+// import { useIsFocused } from '@react-navigation/native';
 
 import api from '../../services/api';
 import formatValue from '../../utils/formatValue';
@@ -23,19 +24,32 @@ interface Food {
   name: string;
   description: string;
   price: number;
-  formattedValue: number;
+  formattedValue: string;
   thumbnail_url: string;
+  formattedPrice: string;
 }
 
 const Orders: React.FC = () => {
   const [orders, setOrders] = useState<Food[]>([]);
+  // const isFocused = useIsFocused();
 
   useEffect(() => {
     async function loadOrders(): Promise<void> {
       // Load orders from API
-    }
 
+      const { data } = await api.get<Food[]>('/orders');
+      const parsedData = data.map(resFood => {
+        return {
+          ...resFood,
+          formattedValue: formatValue(resFood.price),
+        } as Food;
+      });
+      setOrders(parsedData);
+    }
+    // if (isFocused) {
     loadOrders();
+    // }
+    // }, [isFocused]);
   }, []);
 
   return (
